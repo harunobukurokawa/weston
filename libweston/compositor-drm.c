@@ -167,6 +167,7 @@ struct drm_output {
 	struct drm_edid edid;
 	drmModePropertyPtr dpms_prop;
 	uint32_t gbm_format;
+	uint32_t gbm_bo_flags;
 
 	enum dpms_enum dpms;
 
@@ -2046,8 +2047,7 @@ drm_output_init_egl(struct drm_output *output, struct drm_backend *b)
 					     output->base.current_mode->width,
 					     output->base.current_mode->height,
 					     format[0],
-					     GBM_BO_USE_SCANOUT |
-					     GBM_BO_USE_RENDERING);
+					     output->gbm_bo_flags);
 	if (!output->gbm_surface) {
 		weston_log("failed to create gbm surface\n");
 		return -1;
@@ -2834,6 +2834,8 @@ create_output_for_connector(struct drm_backend *b,
 
 	output->backlight = backlight_init(drm_device,
 					   connector->connector_type);
+
+	output->gbm_bo_flags = GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING;
 
 	output->base.enable = drm_output_enable;
 	output->base.destroy = drm_output_destroy;
