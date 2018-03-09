@@ -136,6 +136,7 @@ remoting_gst_pipeline_init(struct remoted_output *output)
 	char pipeline_str[1024];
 	GstCaps *caps;
 	GError *err = NULL;
+	GstPad *appsrc_pad;
 	struct weston_mode *mode = output->output->current_mode;
 
 	snprintf(pipeline_str, sizeof(pipeline_str),
@@ -183,6 +184,10 @@ remoting_gst_pipeline_init(struct remoted_output *output)
 		     "is-live", TRUE,
 		     NULL);
 	gst_caps_unref(caps);
+
+	appsrc_pad = gst_element_get_static_pad(GST_ELEMENT_CAST(output->appsrc), "src");
+	if (!appsrc_pad)
+		weston_log("Failed to get src0 pad of appsrc\n");
 
 	output->bus = gst_pipeline_get_bus(GST_PIPELINE(output->pipeline));
 	if (!output->bus) {
