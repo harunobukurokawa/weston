@@ -3539,6 +3539,11 @@ drm_virtual_output_finish_frame_handler(void *data)
 {
 	struct drm_output *output = data;
 
+	/*if (output->page_flip_pending) */ {
+		drm_output_release_fb(output, output->current);
+		output->current = output->next;
+		output->next = NULL;
+	}
 //	drm_output_state_free(output->state_last);
 //	output->state_last = NULL;
 
